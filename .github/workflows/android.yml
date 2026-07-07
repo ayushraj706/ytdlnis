@@ -37,16 +37,20 @@ jobs:
       run: touch local.properties
       
     - name: Create Keystore Properties File
-      # Dono common naming conventions daal diye hain taaki tumhara build.gradle jise bhi read kare, wo set ho jaye.
+      # Isme absolute path ($GITHUB_WORKSPACE) aur saare variable names daal diye hain taaki null error na aaye
       run: |
-        echo "storeFile=release_keystore.jks" > keystore.properties
+        echo "storeFile=$GITHUB_WORKSPACE/app/release_keystore.jks" > keystore.properties
         echo "storePassword=android123" >> keystore.properties
         echo "keyAlias=release_alias" >> keystore.properties
         echo "keyPassword=android123" >> keystore.properties
-        echo "KEYSTORE_FILE=release_keystore.jks" >> keystore.properties
+        echo "KEYSTORE_FILE=$GITHUB_WORKSPACE/app/release_keystore.jks" >> keystore.properties
         echo "KEYSTORE_PASSWORD=android123" >> keystore.properties
         echo "KEY_ALIAS=release_alias" >> keystore.properties
         echo "KEY_PASSWORD=android123" >> keystore.properties
+        echo "releaseStoreFile=$GITHUB_WORKSPACE/app/release_keystore.jks" >> keystore.properties
+        echo "releaseStorePassword=android123" >> keystore.properties
+        echo "releaseKeyAlias=release_alias" >> keystore.properties
+        echo "releaseKeyPassword=android123" >> keystore.properties
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -167,3 +171,4 @@ jobs:
           Commit message: ${{ github.event.commits[0].message }}
           Repository: ${{ github.repository }}
           See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+          
