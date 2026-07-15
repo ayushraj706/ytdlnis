@@ -28,13 +28,16 @@ jobs:
         distribution: 'corretto'
         cache: 'gradle'
 
-    # --- TUMHARI KEYSTORE DECODING ---
+    # --- TUMHARI KEYSTORE DECODING (Pichle setup jaisi) ---
     - name: Decode Keystore
       run: |
         mkdir -p app
         echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > app/release_keystore.jks
 
-    # --- FIX: YAHAN VARIABLES KE NAAM BUILD.GRADLE KE HISAAB SE UPDATE KIYE HAIN ---
+    - name: Create Blank Local Properties File
+      run: touch local.properties
+      
+    # --- YAHAN TUMHARE SECRETS BUILD.GRADLE KE HISAAB SE SET HONGEY ---
     - name: Create Keystore Properties File
       run: |
         echo "signingConfig.storeFile=release_keystore.jks" > keystore.properties
@@ -52,7 +55,7 @@ jobs:
     - name: Build apk release project (APK)
       run: ./gradlew assembleGithubRelease --warning-mode all
 
-   # Upload Artifact Build
+    # Upload Artifact Build Github
     - name: Find Release Github arm64
       run: echo "APK_PATH=$(find ${{ env.main_project_module }}/build/outputs/apk/github/release/ -type f -name '*arm64*.apk')" >> $GITHUB_ENV
     - name: Upload APK Release Github arm64
@@ -100,7 +103,7 @@ jobs:
         name: YTDLnis APK release github generated
         path: ${{ env.main_project_module }}/build/outputs/apk/github/release/
 
-      # Create APK FOSS Release
+    # Create APK FOSS Release
     - name: Build apk release project (APK)
       run: ./gradlew assembleFossRelease --warning-mode all
 
@@ -150,7 +153,7 @@ jobs:
         name: YTDLnis APK release FOSS generated
         path: ${{ env.main_project_module }}/build/outputs/apk/foss/release/
 
-   # Send Message To Telegram
+    # Send Message To Telegram
     - name: send telegram message on push or pull
       continue-on-error: true
       uses: appleboy/telegram-action@master
